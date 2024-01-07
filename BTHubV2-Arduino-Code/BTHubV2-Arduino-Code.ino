@@ -23,20 +23,38 @@ BLEHidGamepad blegamepad;
 // 在Adafruit_TinyUSB_Arduino的hid.h中定义
 hid_gamepad_report_t gp;
 
+// 定义各个引脚
+#define PIN0_19     NRF_GPIO_PIN_MAP(0,19)      // 定义P0.19
+#define PIN1_11     NRF_GPIO_PIN_MAP(1,11)      // 定义P1.11
+#define PIN0_12     NRF_GPIO_PIN_MAP(0,12)      // 定义P0.12
+#define PIN0_08     NRF_GPIO_PIN_MAP(0,8)       // 定义P0.08
+#define PIN1_02     NRF_GPIO_PIN_MAP(1,2)       // 定义P1.02
+#define PIN0_24     NRF_GPIO_PIN_MAP(0,24)      // 定义P0.24
+#define PIN1_06     NRF_GPIO_PIN_MAP(1,6)       // 定义P1.06
+#define PIN0_17     NRF_GPIO_PIN_MAP(0,17)      // 定义P0.17
+#define PIN1_15     NRF_GPIO_PIN_MAP(1,15)      // 定义P1.15
+#define PIN1_08     NRF_GPIO_PIN_MAP(1,8)       // 定义P1.08
+#define PIN0_21     NRF_GPIO_PIN_MAP(0,21)      // 定义P0.21
+#define PIN0_23     NRF_GPIO_PIN_MAP(0,23)      // 定义P0.23
+#define PIN1_13     NRF_GPIO_PIN_MAP(1,13)      // 定义P1.13
+#define PIN1_04     NRF_GPIO_PIN_MAP(1,4)       // 定义P1.04
+#define PIN1_00     NRF_GPIO_PIN_MAP(1,0)       // 定义P1.00
+#define PIN0_07     NRF_GPIO_PIN_MAP(0,7)       // 定义P0.07
+#define PIN1_09     NRF_GPIO_PIN_MAP(1,9)       // 定义P1.09
+#define PIN0_11     NRF_GPIO_PIN_MAP(0,11)      // 定义P0.11
+#define PIN0_22     NRF_GPIO_PIN_MAP(0,22)      // 定义P0.22
+#define PIN0_20     NRF_GPIO_PIN_MAP(0,20)      // 定义P0.20
+#define PIN1_10     NRF_GPIO_PIN_MAP(1,10)      // 定义P1.10
+#define PIN0_06     NRF_GPIO_PIN_MAP(0,6)       // 定义P0.06
+
 // 定义所有按钮的引脚
 const int buttonPins[] = {
-    12,  // 原P0_12
-    8,   // 原P0_08
-    24,  // 原P0_24
-    17,  // 原P0_17
-    21,  // 原P0_21
-    23,  // 原P0_23
-    7,   // 原P0_07
-    11,  // 原P0_11
-    22,  // 原P0_22
-    20,  // 原P0_20
-    6    // 原P0_06
+    PIN0_19, PIN1_11, PIN0_12, PIN0_08, PIN1_02, PIN0_24, PIN1_06, PIN0_17,
+    PIN1_15, PIN1_08, PIN0_21, PIN0_23, PIN1_13, PIN1_04, PIN1_00, PIN0_07,
+    PIN1_09, PIN0_11, PIN0_22, PIN0_20, PIN1_10, PIN0_06
+    //...
 };
+
 const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
 
 void setup() {
