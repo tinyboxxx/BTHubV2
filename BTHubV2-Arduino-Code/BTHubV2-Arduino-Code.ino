@@ -23,11 +23,29 @@ BLEHidGamepad blegamepad;
 // 在Adafruit_TinyUSB_Arduino的hid.h中定义
 hid_gamepad_report_t gp;
 
-const int buttonPin = 2;  // P0.02用作按钮输入
+// 定义所有按钮的引脚
+const int buttonPins[] = {
+    12,  // 原P0_12
+    8,   // 原P0_08
+    24,  // 原P0_24
+    17,  // 原P0_17
+    21,  // 原P0_21
+    23,  // 原P0_23
+    7,   // 原P0_07
+    11,  // 原P0_11
+    22,  // 原P0_22
+    20,  // 原P0_20
+    6    // 原P0_06
+};
+const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
 
 void setup() {
   Serial.begin(115200);
-  pinMode(buttonPin, INPUT_PULLUP);  // 将按钮引脚设置为输入，并启用内部上拉电阻
+
+  // 初始化所有按钮引脚
+  for (int i = 0; i < numButtons; ++i) {
+    pinMode(buttonPins[i], INPUT_PULLUP);
+  }
 
 
 #if CFG_DEBUG
@@ -99,13 +117,15 @@ void startAdv(void) {
 void loop() {
   // 如果没有连接，或者
   if (!Bluefruit.connected()) return;
+  // 重置按钮状态
+  gp.buttons = 0;
 
-  // 读取按钮状态
-  bool buttonState = digitalRead(buttonPin);
-
-  // 更新游戏手柄的状态
-  gp.buttons = buttonState ? 0x00 : 0x01;  // 如果按钮被按下，设置第一个按钮的状态为1，否则为0
-
+  // 读取每个按钮的状态并更新游戏手柄的按钮状态
+  for (int i = 0; i < numButtons; ++i) {
+    if (digitalRead(buttonPins[i]) == LOW) { // 按钮按下
+      gp.buttons |= (1 << i);
+    }
+  }
   // 发送游戏手柄的状态
   blegamepad.report(&gp);
 
