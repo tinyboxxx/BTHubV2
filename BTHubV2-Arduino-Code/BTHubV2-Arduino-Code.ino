@@ -40,19 +40,23 @@ hid_gamepad_report_t gp;
 #define PIN1_04     NRF_GPIO_PIN_MAP(1,4)       // 定义P1.04
 #define PIN1_00     NRF_GPIO_PIN_MAP(1,0)       // 定义P1.00
 #define PIN0_07     NRF_GPIO_PIN_MAP(0,7)       // 定义P0.07
-#define PIN1_09     NRF_GPIO_PIN_MAP(1,9)       // 定义P1.09
+// #define PIN1_09     NRF_GPIO_PIN_MAP(1,9)       // 定义P1.09
 #define PIN0_11     NRF_GPIO_PIN_MAP(0,11)      // 定义P0.11
 #define PIN0_22     NRF_GPIO_PIN_MAP(0,22)      // 定义P0.22
 #define PIN0_20     NRF_GPIO_PIN_MAP(0,20)      // 定义P0.20
-#define PIN1_10     NRF_GPIO_PIN_MAP(1,10)      // 定义P1.10
+// #define PIN1_10     NRF_GPIO_PIN_MAP(1,10)      // 定义P1.10
 #define PIN0_06     NRF_GPIO_PIN_MAP(0,6)       // 定义P0.06
+#define PIN0_31     NRF_GPIO_PIN_MAP(0,31)       // 定义P0.31
+#define PIN0_29     NRF_GPIO_PIN_MAP(0,29)       // 定义P0.29
+#define PIN0_02     NRF_GPIO_PIN_MAP(0,2)       // 定义P0.02
+
+// P1.10/P1.09 目前有问题，其余可用共有23个IO
 
 // 定义所有按钮的引脚
 const int buttonPins[] = {
     PIN0_19, PIN1_11, PIN0_12, PIN0_08, PIN1_02, PIN0_24, PIN1_06, PIN0_17,
-    PIN1_15, PIN1_08, PIN0_21, PIN0_23, PIN1_13, PIN1_04, PIN1_00, PIN0_07,
-    PIN1_09, PIN0_11, PIN0_22, PIN0_20, PIN1_10, PIN0_06
-    //...
+    PIN1_15, PIN1_08, PIN0_21, PIN0_23, PIN1_13, PIN1_04, PIN1_00, PIN0_07, 
+    PIN0_11, PIN0_22, PIN0_20, PIN0_06, PIN0_31, PIN0_29, PIN0_02
 };
 
 const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
