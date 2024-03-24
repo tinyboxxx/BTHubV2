@@ -16,7 +16,7 @@
 
 BLEDis bledis;
 BLEHidGamepad blegamepad;
-SwRotaryEncoder ENC1;
+HwRotaryEncoder ENC1;
 SwRotaryEncoder ENC2;
 
 // 在Adafruit_TinyUSB_Arduino的hid.h中定义
@@ -110,6 +110,7 @@ void setup() {
   }
 
   ENC1.begin(ENC1_A, ENC1_B);
+  ENC1.start();
   ENC2.begin(ENC2_A, ENC2_B);
 
 #if CFG_DEBUG
@@ -171,19 +172,20 @@ void startAdv(void) {
   Bluefruit.Advertising.start(0);              // 0 = 不在n秒后停止广播
 }
 bool dir = LOW;
+int value1 = 0;
+int value2 = 0;
 void loop() {
 
   // 如果没有连接，或者
   if (!Bluefruit.connected())
     return;
 
-  // 重置按钮状态和轴状态
-  memset(&gp, 0, sizeof(hid_gamepad_report_t));
-
   unsigned long currentTime = millis();  // 获取当前时间
   // 读取每个按钮的状态并更新游戏手柄的按钮状态
-  for (size_t t = 0; t < 10; t++)  // 进行10次更新
+  for (size_t t = 0; t < 50; t++)  // 进行10次更新
   {
+    // 重置按钮状态和轴状态
+    memset(&gp, 0, sizeof(hid_gamepad_report_t));
     for (int i = 0; i < numButtons; ++i) {
       if (i == 2 || i == 10)  // GP3 和 GP11
       {
@@ -195,16 +197,16 @@ void loop() {
         gp.buttons |= (1 << i);
         lastActionTime = currentTime;  // 更新最后一次操作时间
       }
-    }
-    int value = ENC1.read();
-    if (value) {
-      lastActionTime = currentTime;
-      gp.buttons |= (value > 0 ? (1 << ENC1L) : (1 << ENC1R));  // 直接根据 value 的正负更新相应的按键状态
-    }
-    value = ENC2.read();
-    if (value) {
-      lastActionTime = currentTime;
-      gp.buttons |= (value > 0 ? (1 << ENC2L) : (1 << ENC2R));
+      value1 = ENC1.read();
+      if (value1) {
+        lastActionTime = currentTime;
+        gp.buttons |= (value1 > 0 ? (1 << ENC1L) : (1 << ENC1R));  // 直接根据 value 的正负更新相应的按键状态
+      }
+      value2 = ENC2.read();
+      if (value2) {
+        lastActionTime = currentTime;
+        gp.buttons |= (value2 > 0 ? (1 << ENC2L) : (1 << ENC2R));
+      }
     }
     // 发送游戏手柄的状态
     if (gp.buttons != prev_gp_buttons) {
