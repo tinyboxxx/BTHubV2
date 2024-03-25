@@ -90,6 +90,9 @@ const int buttonPins[] = {
   GP_11, GP_12, GP_13, GP_14, GP_15, GP_16
 };
 
+bool blinking = false;
+bool ledon = true;
+
 const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
 // 定义模拟量输入引脚
 const int analogPins[] = { PIN0_31, PIN0_29 };
@@ -179,10 +182,30 @@ void loop() {
   // 如果没有连接，或者
   if (!Bluefruit.connected())
     return;
+  uint32_t bat = analogReadVDD();
+  if (bat < 800)  // 940→4.12v, 800~3V 640~1.7V
+  {
+    blinking = true;
+  } else if (bat > 900) {
+    blinking = false;
+  }
+
+  if (blinking) {
+    if (ledon = true) {
+      ledon = false;
+      digitalWrite(PIN_LED, LOW);
+    } else {
+      ledon = true;
+      digitalWrite(PIN_LED, HIGH);
+    }
+  } else if (ledon = true) {
+    ledon = false;
+    digitalWrite(PIN_LED, LOW);
+  }
 
   unsigned long currentTime = millis();  // 获取当前时间
   // 读取每个按钮的状态并更新游戏手柄的按钮状态
-  for (size_t t = 0; t < 50; t++)  // 进行10次更新
+  for (size_t t = 0; t < 80; t++)  // 进行10次更新
   {
     // 重置按钮状态和轴状态
     memset(&gp, 0, sizeof(hid_gamepad_report_t));
