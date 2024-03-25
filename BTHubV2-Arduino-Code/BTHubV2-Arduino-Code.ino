@@ -97,10 +97,10 @@ const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
 // 定义模拟量输入引脚
 const int analogPins[] = { PIN0_31, PIN0_29 };
 unsigned long lastActionTime = 0;   // 记录最后一次操作的时间
-bool prev_gp_buttons = gp.buttons;  // 记录最后一次操作
+uint32_t prev_gp_buttons = gp.buttons;  // 记录最后一次操作
 
 void setup() {
-  Serial.begin(115200);
+  // Serial.begin(115200);
   digitalWrite(PIN_LED, HIGH);  // P0.15
 
   // 初始化所有按钮引脚
@@ -191,16 +191,16 @@ void loop() {
   }
 
   if (blinking) {
-    if (ledon = true) {
+    if (ledon == true) {
       ledon = false;
       digitalWrite(PIN_LED, LOW);
     } else {
       ledon = true;
       digitalWrite(PIN_LED, HIGH);
     }
-  } else if (ledon = true) {
-    ledon = false;
-    digitalWrite(PIN_LED, LOW);
+  } else if (ledon == false) {
+    ledon = true;
+    digitalWrite(PIN_LED, HIGH);
   }
 
   unsigned long currentTime = millis();  // 获取当前时间
