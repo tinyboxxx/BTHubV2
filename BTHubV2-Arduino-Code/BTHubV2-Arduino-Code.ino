@@ -99,6 +99,12 @@ const int analogPins[] = { PIN0_31, PIN0_29 };
 unsigned long lastActionTime = 0;   // 记录最后一次操作的时间
 uint32_t prev_gp_buttons = gp.buttons;  // 记录最后一次操作
 
+// 消抖
+unsigned long debounceDelay = 30;    // 定义按钮防抖动延迟时间，单位为毫秒
+unsigned long lastDebounceTime = 0;
+bool buttonState[numButtons];
+bool lastButtonState[numButtons];
+
 void setup() {
   // Serial.begin(115200);
   digitalWrite(PIN_LED, HIGH);  // P0.15
@@ -210,13 +216,22 @@ void loop() {
     // 重置按钮状态和轴状态
     memset(&gp, 0, sizeof(hid_gamepad_report_t));
     for (int i = 0; i < numButtons; ++i) {
+      bool reading = digitalRead(buttonPins[i]);
+      if (reading != lastButtonState[i]) {
+        lastDebounceTime = millis();
+      }
+      if ((millis() - lastDebounceTime) > debounceDelay) {
+        if (reading != buttonState[i]) {
+          buttonState[i] = reading;
+        }
+      }
       if (i == 2 || i == 10)  // GP3 和 GP11
       {
         dir = HIGH;
       } else {
         dir = LOW;
       }
-      if (digitalRead(buttonPins[i]) == dir) {  // 按钮按下
+      if (buttonState[i] == dir) {
         gp.buttons |= (1 << i);
         lastActionTime = currentTime;  // 更新最后一次操作时间
       }
@@ -230,6 +245,8 @@ void loop() {
         lastActionTime = currentTime;
         gp.buttons |= (value2 > 0 ? (1 << ENC2L) : (1 << ENC2R));
       }
+      lastButtonState[i] = reading;
+    }
     }
     // 发送游戏手柄的状态
     if (gp.buttons != prev_gp_buttons) {
