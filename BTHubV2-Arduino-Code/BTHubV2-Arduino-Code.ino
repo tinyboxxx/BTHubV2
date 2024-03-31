@@ -247,7 +247,6 @@ void loop() {
       }
       lastButtonState[i] = reading;
     }
-    }
     // 发送游戏手柄的状态
     if (gp.buttons != prev_gp_buttons) {
       blegamepad.report(&gp);
