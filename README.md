@@ -1,5 +1,17 @@
 # BTHubV2
- new bluetooth steering wheel hub based on nrf52840
+new bluetooth steering wheel hub based on nrf52840
+
+Firstly, in terms of design, it has changed from one large board to two small boards connected with one using the front side and the other using the back side, and the size of the boards has been reduced to just 10x10 cm, which is convenient for prototyping with JLCPCB.
+
+Secondly, the main controller has been changed from ESP32 to NRF52840, which has significantly reduced power consumption and greatly enhanced battery life, from the original two to three days of battery life to almost infinite battery life now.
+
+Thirdly, the previous mechanical keyboard switches have been replaced with simple 12x12 buttons with button caps, and the feel is quite good. After applying stickers, it also looks very professional.
+
+Fourthly, the shift paddle buttons that previously required wiring connections have been changed to onboard connections, making the production process much more convenient.
+
+## PCB: https://oshwhub.com/tinybox/bthubv2
+
+## 3D print: https://makerworld.com/zh/models/388164#profileId-288880
 
 # 希望被大家改进的功能：
 
