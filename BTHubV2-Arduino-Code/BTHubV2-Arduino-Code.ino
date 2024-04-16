@@ -15,6 +15,7 @@
 #include "RotaryEncoder.h"
 
 BLEDis bledis;
+BLEBas blebas;    // BAS (Battery Service) helper class instance
 BLEHidGamepad blegamepad;
 HwRotaryEncoder ENC1;
 SwRotaryEncoder ENC2;
@@ -133,8 +134,9 @@ void setup() {
 
   // 配置并启动设备信息服务
   bledis.setManufacturer("Tinybox");
-  bledis.setModel("TiHub v2");
+  bledis.setModel("TiHUBv2");
   bledis.begin();
+  blebas.begin();
 
   /* 启动BLE HID
    * 注意：苹果要求BLE设备的最小连接间隔必须>= 20ms
@@ -163,7 +165,7 @@ void startAdv(void) {
 
   // 包含BLE HID服务
   Bluefruit.Advertising.addService(blegamepad);
-  Bluefruit.setName("TiHub v2");
+  Bluefruit.setName("TiHUBv2");
   Bluefruit.Advertising.addName();
 
   /* 开始广播
@@ -189,6 +191,9 @@ void loop() {
   if (!Bluefruit.connected())
     return;
   uint32_t bat = analogReadVDD();
+  int bat_percent = constrain(map(bat,860,942,0,100),0,100);
+  blebas.write(bat_percent);
+
   if (bat < 800)  // 940→4.12v, 800~3V 640~1.7V
   {
     blinking = true;
@@ -211,7 +216,7 @@ void loop() {
 
   unsigned long currentTime = millis();  // 获取当前时间
   // 读取每个按钮的状态并更新游戏手柄的按钮状态
-  for (size_t t = 0; t < 80; t++)  // 进行10次更新
+  for (size_t t = 0; t < 80; t++)  // 进行80次更新
   {
     // 重置按钮状态和轴状态
     memset(&gp, 0, sizeof(hid_gamepad_report_t));
