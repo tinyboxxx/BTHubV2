@@ -51,13 +51,11 @@ const int buttonPins[] = {
 bool blinking = false;
 bool ledon = true;
 
-#define KEY_F9 0x42
-#define KEY_F10 0x43
 
 // 使用ASCII字符定义键值映射
 const char keymap[] = {
-  'a', 'b', KEY_F9, 'c', 'd', 'e',
-  'f', 'g', 'h', 'i', KEY_F10, 'j',
+  'a', 'b', 'o', 'c', 'd', 'e',
+  'f', 'g', 'h', 'i', 'p', 'j',
   'k', 'l', 'm', 'n'
 };
 
