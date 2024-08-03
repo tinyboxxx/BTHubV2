@@ -48,24 +48,23 @@ const int buttonPins[] = {
   PIN0_22, PIN0_24, PIN1_04, PIN1_06, PIN0_08, PIN0_06,
   PIN0_20, PIN0_17, PIN0_12, PIN0_23
 };
+
 bool blinking = false;
 bool ledon = true;
 
-
 // 使用ASCII字符定义键值映射
 const char keymap[] = {
-  'a', 'b', 'o', 'c', 'd', 'e',
-  'f', 'g', 'h', 'i', 'p', 'j',
-  'k', 'l', 'm', 'n'
+  'a', 'b', 'c', 'd', 'e', 'f',
+  'g', 'h', 'i', 'j', 'k', 'l',
+  'm', 'n', 'o', 'p'
 };
-
 
 const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
 unsigned long lastActionTime = 0;  // 记录最后一次操作的时间
 
 // 消抖
 unsigned long debounceDelay = 30;  // 定义按钮防抖动延迟时间，单位为毫秒
-unsigned long lastDebounceTime = 0;
+unsigned long lastDebounceTime[numButtons] = {0};
 bool buttonState[numButtons];
 bool lastButtonState[numButtons];
 
@@ -108,7 +107,7 @@ void startAdv() {
   Bluefruit.Advertising.setFastTimeout(30);    // 快速模式下的秒数
   Bluefruit.Advertising.start(0);              // 0 = 不在n秒后停止广播
 }
-bool dir = LOW;
+
 void loop() {
   bool anyKeyPressed = false;
 
@@ -140,66 +139,62 @@ void loop() {
   }
 
   unsigned long currentTime = millis();  // 获取当前时间
-  // 读取每个按钮的状态并更新游戏手柄的按钮状态
-  for (size_t t = 0; t < 80; t++)  // 进行80次更新
-  {
-    for (int i = 0; i < numButtons; ++i) {
-      bool reading = digitalRead(buttonPins[i]);  // 读取按钮状态
 
-      // 如果状态发生变化，记录当前时间
-      if (reading != lastButtonState[i]) {
-        lastDebounceTime = millis();
-      }
+  for (int i = 0; i < numButtons; ++i) {
+    bool reading = digitalRead(buttonPins[i]);  // 读取按钮状态
 
-      // 检查是否超过消抖时间，并且状态确实发生变化
-      if ((millis() - lastDebounceTime) > debounceDelay && reading != buttonState[i]) {
-        buttonState[i] = reading;  // 更新按钮状态
-      }
-      if (i == 2 || i == 10) {
-        dir = HIGH;
-      } else {
-        dir = LOW;
-      }
-      if (buttonState[i] == dir) {
-        blehid.keyPress(keymap[i]);  // 更新键盘按键状态
-        lastActionTime = currentTime;
-      } else {
-        blehid.keyRelease();  // 发送释放所有键
-      }
-
-      int value1 = ENC1.read();
-      if (value1) {
-        lastActionTime = currentTime;
-        blehid.keyPress(value1 > 0 ? 'o' : 'p');  // 根据旋转编码器的值更新键盘按键状态
-      }
-      int value2 = ENC2.read();
-      if (value2) {
-        lastActionTime = currentTime;
-        blehid.keyPress(value2 > 0 ? 'q' : 'r');
-      }
-      lastButtonState[i] = reading;
+    if (reading != lastButtonState[i]) {
+      lastDebounceTime[i] = millis();
     }
+
+    if ((millis() - lastDebounceTime[i]) > debounceDelay) {
+      if (reading != buttonState[i]) {
+        buttonState[i] = reading;
+
+        if (buttonState[i] == LOW) {  // 检查按键是否被按下（LOW）
+          blehid.keyPress(keymap[i]);  // 更新键盘按键状态
+          lastActionTime = currentTime;
+          anyKeyPressed = true;
+        }
+      }
+    }
+
+    lastButtonState[i] = reading;
   }
+
+  int value1 = ENC1.read();
+  if (value1) {
+    lastActionTime = currentTime;
+    blehid.keyPress(value1 > 0 ? 'o' : 'p');  // 根据旋转编码器的值更新键盘按键状态
+    anyKeyPressed = true;
+  }
+
+  int value2 = ENC2.read();
+  if (value2) {
+    lastActionTime = currentTime;
+    blehid.keyPress(value2 > 0 ? 'q' : 'r');  // 根据旋转编码器的值更新键盘按键状态
+    anyKeyPressed = true;
+  }
+
+  if (!anyKeyPressed) {
+    blehid.keyRelease();  // 释放所有按键
+  }
+
   gotoSleep(currentTime);
 }
 
 void gotoSleep(unsigned long currentTime) {
   // 如果当前时间与最后一次操作时间的差值大于睡眠延迟时间，则进入睡眠模式
   if (currentTime - lastActionTime > SLEEPING_DELAY) {
-    // to reduce power consumption when sleeping, turn off all your LEDs (and other power hungry devices)
-    digitalWrite(PIN_LED, LOW);  // P0.15
+    digitalWrite(PIN_LED, LOW);  // 关闭LED
 
-    // setup your wake-up pins.
     for (int i = 0; i < numButtons; ++i) {
       if (i != 2 && i != 10)  // GP3 和 GP11 以外的所有按钮
       {
-        pinMode(buttonPins[i], INPUT_PULLUP_SENSE);  // this pin (WAKE_LOW_PIN) is pulled up and wakes up the feather when externally connected to ground.
+        pinMode(buttonPins[i], INPUT_PULLUP_SENSE);  // 设置为唤醒引脚
       }
     }
 
-    // pinMode(WAKE_HIGH_PIN, INPUT_PULLDOWN_SENSE); // this pin (WAKE_HIGH_PIN) is pulled down and wakes up the feather when externally connected to 3.3v.
-
-    // power down nrf52.
-    sd_power_system_off();  // this function puts the whole nRF52 to deep sleep (no Bluetooth).  If no sense pins are setup (or other hardware interrupts), the nrf52 will not wake up.
+    sd_power_system_off();  // 进入深度睡眠模式
   }
 }
