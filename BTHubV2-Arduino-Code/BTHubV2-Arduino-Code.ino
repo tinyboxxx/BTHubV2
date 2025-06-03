@@ -15,7 +15,7 @@
 #include "RotaryEncoder.h"
 
 BLEDis bledis;
-BLEBas blebas;    // BAS (Battery Service) helper class instance
+BLEBas blebas;  // BAS (Battery Service) helper class instance
 BLEHidGamepad blegamepad;
 HwRotaryEncoder ENC1;
 SwRotaryEncoder ENC2;
@@ -97,11 +97,11 @@ bool ledon = true;
 const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
 // 定义模拟量输入引脚
 const int analogPins[] = { PIN0_31, PIN0_29 };
-unsigned long lastActionTime = 0;   // 记录最后一次操作的时间
+unsigned long lastActionTime = 0;       // 记录最后一次操作的时间
 uint32_t prev_gp_buttons = gp.buttons;  // 记录最后一次操作
 
 // 消抖
-unsigned long debounceDelay = 30;    // 定义按钮防抖动延迟时间，单位为毫秒
+unsigned long debounceDelay = 30;  // 定义按钮防抖动延迟时间，单位为毫秒
 unsigned long lastDebounceTime = 0;
 bool buttonState[numButtons];
 bool lastButtonState[numButtons];
@@ -191,7 +191,7 @@ void loop() {
   if (!Bluefruit.connected())
     return;
   uint32_t bat = analogReadVDD();
-  int bat_percent = constrain(map(bat,860,942,0,100),0,100);
+  int bat_percent = constrain(map(bat, 860, 942, 0, 100), 0, 100);
   blebas.write(bat_percent);
 
   if (bat < 800)  // 940→4.12v, 800~3V 640~1.7V
